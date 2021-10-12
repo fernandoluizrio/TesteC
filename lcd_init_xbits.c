@@ -2,7 +2,7 @@
 /*                                                                          */
 /* Driver para Displays LCDs baseados no chip Hitachi HD44780               */
 /*                                                                          */
-/* Versão 1.0.0     (V20211012)                                             */
+/* Versão 1.0.1     (V20211012)                                             */
 /*                                                                          */
 /* Autor: Fernando da Cunha Luiz                                            */
 /*                                                                          */
@@ -11,14 +11,12 @@
 /*                                                                          */
 /****************************************************************************/
 
-//#define MODO_8_BITS // Modo de dados do display LCD
+#define MODO_8_BITS // Modo de dados do display LCD
 
 #define LCD_TIPO_COMANDO    0
 #define LCD_TIPO_DADO       1
 
 void lcd_init(void);         // Inicializa o display LCD
-void lcd_config_4bits(void); // Inicializa o display LCD no modo interface 4-bits
-void lcd_config_8bits(void); // Inicializa o display LCD no modo interface 8-bits
 void lcd_en_pulse(void);     // Pulsa pino EN do display LCD
 
 // Envia comando ou dado para o display LCD, 0 = comando, 1 = dado:
@@ -99,12 +97,19 @@ void lcd_init(void){
     // Display esta no modo interface 8-bits.
 
 #ifdef MODO_8_BITS
-    lcd_config_8bits(); // Inicializa o display no modo interface 8-bits
+    // Display esta no modo interface 8-bits.
     // DL = Bit 4 = 1 => Modo interface 8-bits
     linhas_fonte = ((HIGH << 5) | (HIGH << 4)) ; // 0x30, bit 5 e bit 4 em alto
     // Display esta no modo interface 8-bits.
 #else
-    lcd_config_4bits(); //  Inicializa o display no modo interface 4-bits
+    // Display esta no modo interface 8-bits.
+    // Bits 7 e 6 em baixo + bit 5 em alto + bit 4 em alto
+    // DL = Bit 4 = 0 => Troca para modo interface 4-bits
+    LCD_BIT_4 = LOW; // 0x20, bit 4 em baixo
+
+    // Envia 0x20:
+    lcd_en_pulse(); // Pulsa pino EN do display
+
     // DL = Bit 4 = 0 => Modo interface 4-bits
     linhas_fonte = ((HIGH << 5) | (LOW << 4)) ; // 0x20, bit 5 em alto e bit 4 em baixo
     // Display esta no modo interface 4-bits.
@@ -117,62 +122,6 @@ void lcd_init(void){
     lcd_envia_comando_dado(linhas_fonte, LCD_TIPO_COMANDO); // Envia comando para o display LCD
 
 } // lcd_init()
-
-/****************************************************************************/
-
-// Somente inicializa o display no modo interface 4-bits:
-void lcd_config_4bits(void){
-
-    // Display esta no modo interface 8-bits.
-    // Bits 7 e 6 em baixo + bit 5 em alto + bit 4 em alto
-
-    // DL = Bit 4 = 0 => Troca para modo interface 4-bits
-    LCD_BIT_4 = LOW; // 0x20, bit 4 em baixo
-
-    // Envia 0x20:
-    lcd_en_pulse(); // Pulsa pino EN do display
-
-    /*-------------*/
-    // Display agora esta no modo interface 4-bits
-    /*-------------*/
-
-    // Envia nibble mais significativo:
-    // Envia 0x20:
-    lcd_en_pulse(); // Pulsa pino EN do display
-
-    // Envia nibble menos significativo:
-    // 2 linhas e fonte 5 X 8:
-    // Envia 0x28:
-    LCD_BIT_7 = (1 << 3); // 0x28 = 0x20 + N, N = 1 => 2 linhas, N = 0 => 1 linha
-    LCD_BIT_6 = (0 << 2); // 0x28 = 0x28 + F, Fonte, F = 1 => 5 X 10, F = 0 => 5 X 8
-
-
-    lcd_en_pulse(); // Pulsa pino EN do display
-    delay(1); // Mínimo de 37us
-
-} // lcd_config_4bits()
-
-/****************************************************************************/
-
-// Somente inicializa o display no modo interface 8-bits:
-void lcd_config_8bits(void){
-
-    // Display esta no modo interface 8-bits.
-    // Bits 7 e 6 em baixo + bit 5 em alto + bit 4 em alto
-
-    // DL = Bit 4 = 1 => Mantem modo interface 8-bits
-    LCD_BIT_4 = (HIGH << 4) ; // 0x30, bit 4 em alto
-
-    // Fonte 5 X 8 e 2 linhas:
-    LCD_BIT_3 = (1 << 3); // 0x38 = 0x30 + N, N = 1 => 2 linhas, N = 0 => 1 linha
-    LCD_BIT_2 = (0 << 2); // 0x38 = 0x38 + F, Fonte, F = 1 => 5 X 10, F = 0 => 5 X 8
-
-    // Bit 4 em baixo + bit 3 com N + bit 2 com F
-    // Envia 0x38:
-    lcd_en_pulse(); // Pulsa pino EN do display
-    delay(1); // Mínimo de 37us
-
-} // lcd_config_8bits
 
 /****************************************************************************/
 
