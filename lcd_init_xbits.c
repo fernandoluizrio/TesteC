@@ -11,7 +11,7 @@
 /*                                                                          */
 /****************************************************************************/
 
-#define MODO_8_BITS // Modo de dados do display LCD
+//#define MODO_8_BITS // Modo de dados do display LCD
 
 #define LCD_TIPO_COMANDO    0
 #define LCD_TIPO_DADO       1
