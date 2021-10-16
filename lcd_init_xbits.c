@@ -2,13 +2,13 @@
 /*                                                                          */
 /* Driver para Displays LCDs baseados no chip Hitachi HD44780               */
 /*                                                                          */
-/* Versão 1.0.5     (V20211015)                                             */
+/* Versão 1.0.7     (V20211016)                                             */
 /*                                                                          */
 /* Autores: Fernando da Cunha Luiz                                          */
 /*          Halysson Carvalho Junior                                        */
 /*                                                                          */
 /* Criado em : 12 de outubro de 2021                                        */
-/* Revisão em: 15 de outubro de 2021                                        */
+/* Revisão em: 16 de outubro de 2021                                        */
 /*                                                                          */
 /****************************************************************************/
 
@@ -63,23 +63,27 @@ void lcd_print(char *frase, int8_t linha);
 #define LCD_BIT_I_D ((uint8_t)(HIGH << 1)) // HIGH => incrementa, LOW => decrementa
 #define LCD_BIT_S   ((uint8_t)(HIGH << 0)) // HIGH => desloca,    LOW => não desloca
 
-#define LCD_OFF     0x04                             // Comando "Display off"
+#define LCD_OFF     0x08                             // Comando "Display off"
 #define LCD_LIMPA   0x01                             // Comando "Display clear"
-#define LCD_MODO    (0x02 | LCD_BIT_I_D | LCD_BIT_S) // Comando "Display clear"
+#define LCD_MODO    (0x04 | LCD_BIT_I_D | LCD_BIT_S) // Comando "Display clear"
 
 /** DEFINIÇÕES DAS CONFIGURAÇÕES DO HARDWARE (PINO DA GPIO OU DA PCB: *******/
 
 #define LOW   0
 #define HIGH  1
 
-//#define LCD_PINO_WR    9 // Define para pino ? Está ligado ao GND?
-#define LCD_PINO_EN    9 // Define para pino ?
-#define LCD_PINO_RS    8 // Define para pino ?
+// Pinos para Franzininho DIY: PB0, PB1, PB2, PB3, PB5 e PB4
 
-#   define LCD_BIT_7   7 // Define para pino ?
-#   define LCD_BIT_6   6 // Define para pino ?
-#   define LCD_BIT_5   5 // Define para pino ?
-#   define LCD_BIT_4   4 // Define para pino ?
+//#define LCD_PINO_WR    PB? // Define para pino ligado ao GND
+
+//#define LCD_PINO_EN    PB0 // Define para pino 4 do conector PB0 só p/ teste
+#define LCD_PINO_EN    PB5 // Define para pino 4 do conector PB5 é RESET na DIY?
+#define LCD_PINO_RS    PB4 // Define para pino 5 do conector
+
+#   define LCD_BIT_7   PB0 // Define para pino 0 do conector
+#   define LCD_BIT_6   PB1 // Define para pino 1 do conector
+#   define LCD_BIT_5   PB2 // Define para pino 2 do conector
+#   define LCD_BIT_4   PB3 // Define para pino 3 do conector
 #ifdef LCD_MODO_8_BITS
 #   define LCD_BIT_3   3 // Define para pino ?
 #   define LCD_BIT_2   2 // Define para pino ?
